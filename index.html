@@ -19,122 +19,78 @@
 
   html,body{
     height:100%; margin:0;
-    font-family:'Press Start 2P', monospace;
-    background:var(--bg-pink);
-    color:var(--text);
+    font-family: 'Press Start 2P', monospace;
+    background:var(--bg-pink); color:var(--text);
   }
-
   body{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:16px;
-    overflow:hidden;
-    padding:28px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;overflow:hidden;padding:28px;
+    -webkit-font-smoothing:none; -moz-osx-font-smoothing:grayscale;
   }
 
-  header{text-align:center;}
-  header h1{font-size:20px;color:#d25084;margin:0 0 4px;}
-  header p{font-size:10px;color:#b56b8a;margin:0;}
+  header{ text-align:center; z-index:3; }
+  header h1{ font-size:20px; color:#d25084; margin:0 0 4px; }
+  header p{ font-size:10px; color:#b56b8a; margin:0; }
 
-  main.letters{display:flex;gap:36px;align-items:flex-start;}
-  @media (max-width:720px){main.letters{flex-direction:column;align-items:center;}}
+  main.letters{ display:flex; gap:36px; align-items:flex-start; z-index:2; }
+  @media (max-width:720px){ main.letters{ flex-direction:column; align-items:center; } }
 
-  .env{
-    width:240px;height:170px;
-    position:relative;
-    cursor:pointer;
-    user-select:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  .env {
+    width:240px; height:170px; position:relative; cursor:pointer; user-select:none;
+    display:flex; align-items:center; justify-content:center;
   }
 
-  .card{
-    width:220px;height:150px;
-    position:relative;
-    display:block;
+  .card {
+    width:220px; height:150px; position:relative; display:block;
     box-sizing:border-box;
   }
 
-  svg.pixel{width:220px;height:150px;image-rendering:pixelated;shape-rendering:crispEdges;display:block;}
+  svg.pixel { width:220px; height:150px; image-rendering:pixelated; shape-rendering:crispEdges; display:block; }
 
-  .flap-g{transform-origin:50% 0%;transform:rotateX(0deg);transition:transform 700ms var(--pixel-step);}
-  .env.open .flap-g{transform:rotateX(180deg);}
+  .flap-g { transform-origin: 50% 0%; transform: rotateX(0deg); transition: transform 700ms var(--pixel-step); }
+  .env.open .flap-g { transform: rotateX(180deg); }
 
-  .message{
-    position:absolute;
-    left:18px;top:34px;
-    width:184px;height:104px;
-    background:var(--paper);
-    border:4px solid #ffdfe9;
-    border-radius:6px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:8px;
-    box-sizing:border-box;
-    color:var(--text);
-    font-size:11px;
-    line-height:1.25;
-    opacity:0;
-    transform:translateY(8px);
-    transition:opacity .25s linear, transform .25s linear;
+  .message {
+    position:absolute; left:18px; top:34px; width:184px; height:104px;
+    background:var(--paper); border:4px solid #ffdfe9; border-radius:6px;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+    padding:8px; box-sizing:border-box; color:var(--text);
+    font-size:11px; line-height:1.25; opacity:0; transform:translateY(8px);
+    transition: opacity .25s linear, transform .25s linear;
   }
-  .message.show{opacity:1;transform:translateY(0);}
+  .message.show { opacity:1; transform:translateY(0); }
 
   /* fixed DAMN style */
-  .damn{
-    font-family:'Press Start 2P', monospace;
-    font-size:16px;
-    color:#c33e6a;
-    letter-spacing:6px;
-    text-align:center;
-    white-space:nowrap;
-    display:inline-block;
-    text-shadow:1px 1px 0 #ffb6d2, -1px -1px 0 #ffb6d2;
-    transform-origin:center;
-    animation:popIn 0.3s ease-out, shake 420ms ease-in-out 0.3s 2;
+  .damn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    color: #c33e6a;
+    letter-spacing: 6px;
+    text-align: center;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    text-shadow: 1px 1px 0 #ffb6d2, -1px -1px 0 #ffb6d2;
+    transform-origin: center;
+    animation: popIn 0.3s ease-out, shake 420ms ease-in-out 0.3s 2;
+    line-height: 1;
   }
 
-  @keyframes shake{
-    0%{transform:translateX(0);}
-    25%{transform:translateX(-6px);}
-    50%{transform:translateX(6px);}
-    75%{transform:translateX(-4px);}
-    100%{transform:translateX(0);}
+  @keyframes shake {
+    0%{ transform: translateX(0) } 25%{ transform: translateX(-6px) } 50%{ transform: translateX(6px) } 75%{ transform: translateX(-4px) } 100%{ transform: translateX(0) }
   }
 
-  @keyframes popIn{
-    0%{transform:scale(0);}
-    70%{transform:scale(1.2);}
-    100%{transform:scale(1);}
-  }
+  .cat-svg { position:fixed; bottom:36px; left:50%; transform:translateX(-50%); width:120px; height:120px; z-index:50; image-rendering:pixelated; animation: catbob 900ms infinite; }
+  @keyframes catbob { 0%{ transform:translate(-50%,0)} 50%{ transform:translate(-50%,-8px) } 100%{ transform:translate(-50%,0)} }
 
-  .cat-svg{
-    position:fixed;
-    bottom:36px;
-    left:50%;
-    transform:translateX(-50%);
-    width:120px;height:120px;
-    z-index:50;
-    image-rendering:pixelated;
-    animation:catbob 900ms infinite;
-  }
+  .petal { position:fixed; width:8px; height:8px; border-radius:1px; z-index:45; image-rendering:pixelated; }
 
-  @keyframes catbob{
-    0%{transform:translate(-50%,0);}
-    50%{transform:translate(-50%,-8px);}
-    100%{transform:translate(-50%,0);}
-  }
+  .spark{ position:absolute; width:6px; height:6px; border-radius:1px; background:#ffd6ea; opacity:.9; filter: blur(.3px); }
 
-  .petal{position:fixed;width:8px;height:8px;border-radius:1px;z-index:45;image-rendering:pixelated;}
-  .spark{position:absolute;width:6px;height:6px;border-radius:1px;background:#ffd6ea;opacity:.9;filter:blur(.3px);}
-  .label{font-size:10px;color:#b75a85;margin-top:8px;text-align:center;}
-  .env:focus{outline:3px dashed rgba(200,100,150,0.2);outline-offset:6px;}
+  .label { font-size:10px; color:#b75a85; margin-top:8px; text-align:center; }
+
+  .env:focus { outline: 3px dashed rgba(200,100,150,0.2); outline-offset:6px; }
+
 </style>
 </head>
 <body>
@@ -143,11 +99,11 @@
     <p>Click your choice</p>
   </header>
 
-  <main class="letters">
-    <!-- SINGLE envelope -->
+  <main class="letters" aria-label="choose letter">
+    <!-- SINGLE -->
     <div class="env" id="env-single" role="button" tabindex="0">
       <div class="card">
-        <svg class="pixel" viewBox="0 0 48 32">
+        <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg">
           <rect x="0" y="6" width="48" height="26" fill="#fff7fb" stroke="#ffdfe9" stroke-width="0.8"/>
           <g class="flap-g">
             <rect x="0" y="0" width="48" height="16" fill="#ffd7e8" stroke="#f7b6cf" stroke-width="0.8"/>
@@ -177,10 +133,10 @@
       <div class="label">Single 💖</div>
     </div>
 
-    <!-- TAKEN envelope -->
+    <!-- TAKEN -->
     <div class="env" id="env-taken" role="button" tabindex="0">
       <div class="card">
-        <svg class="pixel" viewBox="0 0 48 32">
+        <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg">
           <rect x="0" y="6" width="48" height="26" fill="#fffaf8" stroke="#ffe6ee" stroke-width="0.8"/>
           <g class="flap-g">
             <rect x="0" y="0" width="48" height="16" fill="#ffe8ee" stroke="#f6cbd9" stroke-width="0.8"/>
@@ -206,48 +162,49 @@
   <div class="spark" style="left:44%; top:6%;"></div>
 
 <script>
-  const envSingle=document.getElementById('env-single');
-  const envTaken=document.getElementById('env-taken');
-  const msgSingle=document.getElementById('msg-single');
-  const msgTaken=document.getElementById('msg-taken');
-  const replaceTaken=document.getElementById('replace-taken');
+  const envSingle = document.getElementById('env-single');
+  const envTaken = document.getElementById('env-taken');
+  const msgSingle = document.getElementById('msg-single');
+  const msgTaken = document.getElementById('msg-taken');
+  const replaceTaken = document.getElementById('replace-taken');
 
-  function openEnv(envEl,msgEl,withEffects=false,replaceWithDamn=false){
-    if(envEl.classList.contains('open'))return;
+  function openEnv(envEl, msgEl, withEffects=false, replaceWithDamn=false) {
+    if(envEl.classList.contains('open')) return;
     envEl.classList.add('open');
-    setTimeout(()=>{
+    setTimeout(()=> {
       msgEl.classList.add('show');
-      msgEl.setAttribute('aria-hidden','false');
-      if(withEffects){spawnPetals();insertCat();}
-      if(replaceWithDamn){showDamnIn(msgEl);}
-    },700);
+      if(withEffects) { spawnPetals(); insertCat(); }
+      if(replaceWithDamn) { showDamnIn(msgEl); }
+    }, 700);
   }
 
   function spawnPetals(){
-    const colors=['#f9bfd1','#ffd1e6','#ffc4d9'];
+    const colors = ['#f9bfd1','#ffd1e6','#ffc4d9'];
     for(let i=0;i<18;i++){
-      const pet=document.createElement('div');
-      pet.className='petal';
-      pet.style.left=(Math.random()*86+6)+'vw';
-      pet.style.top=(-8-Math.random()*25)+'vh';
-      pet.style.background=colors[Math.floor(Math.random()*colors.length)];
-      pet.style.width=(6+Math.random()*6)+'px';
-      pet.style.height=pet.style.width;
+      const pet = document.createElement('div');
+      pet.className = 'petal';
+      pet.style.left = (Math.random()*86 + 6) + 'vw';
+      pet.style.top = (-8 - Math.random()*25) + 'vh';
+      pet.style.background = colors[Math.floor(Math.random()*colors.length)];
+      pet.style.width = (6 + Math.random()*6) + 'px';
+      pet.style.height = pet.style.width;
       document.body.appendChild(pet);
-      pet.animate([{transform:'translateY(0) rotate(0deg)',opacity:1},
-      {transform:`translateY(${80+Math.random()*50}vh) rotate(${360+Math.random()*360}deg)`,opacity:0}],
-      {duration:3000+Math.random()*1800,easing:'cubic-bezier(.2,.9,.3,1)'});
-      setTimeout(()=>pet.remove(),5200);
+      pet.animate([
+        { transform: 'translateY(0) rotate(0deg)', opacity:1 },
+        { transform: `translateY(${80 + Math.random()*50}vh) rotate(${360 + Math.random()*360}deg)`, opacity:0 }
+      ], { duration: 3000 + Math.random()*1800, easing: 'cubic-bezier(.2,.9,.3,1)'});
+      setTimeout(()=> pet.remove(), 5200);
     }
   }
 
   function insertCat(){
-    if(document.querySelector('.cat-svg'))return;
-    const ns='http://www.w3.org/2000/svg';
-    const svg=document.createElementNS(ns,'svg');
+    if(document.querySelector('.cat-svg')) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns,'svg');
     svg.setAttribute('class','cat-svg');
     svg.setAttribute('viewBox','0 0 12 12');
-    const pixels=[
+
+    const pixels = [
       [4,0,'#f7c7d7'],[5,0,'#f7c7d7'],[6,0,'#f7c7d7'],
       [3,1,'#f7c7d7'],[4,1,'#f7c7d7'],[5,1,'#f39fbf'],[6,1,'#f39fbf'],[7,1,'#f7c7d7'],
       [2,2,'#f7c7d7'],[3,2,'#f39fbf'],[4,2,'#e6769e'],[5,2,'#c94a70'],[6,2,'#e6769e'],[7,2,'#f39fbf'],[8,2,'#f7c7d7'],
@@ -259,27 +216,37 @@
       [2,8,'#ffd1e6'],[3,8,'#ffd1e6'],[4,8,'#ffb6d2'],[5,8,'#ffb6d2'],[6,8,'#ffb6d2'],[7,8,'#ffd1e6'],[8,8,'#ffd1e6'],
       [4,9,'#ffd1e6'],[5,9,'#ffd1e6'],[6,9,'#ffd1e6']
     ];
-    pixels.forEach(([x,y,c])=>{
-      const r=document.createElementNS(ns,'rect');
-      r.setAttribute('x',x);r.setAttribute('y',y);
-      r.setAttribute('width',1);r.setAttribute('height',1);
-      r.setAttribute('fill',c);
+
+    pixels.forEach(([x,y,color]) => {
+      const r = document.createElementNS(ns,'rect');
+      r.setAttribute('x', x);
+      r.setAttribute('y', y);
+      r.setAttribute('width', 1);
+      r.setAttribute('height', 1);
+      r.setAttribute('fill', color);
       svg.appendChild(r);
     });
+
     document.body.appendChild(svg);
-    setTimeout(()=>svg.remove(),7200);
+    setTimeout(()=> svg.remove(), 7200);
   }
 
-  function showDamnIn(msgEl){
-    replaceTaken.innerHTML='';
-    const d=document.createElement('div');
-    d.className='damn';
-    d.textContent='D a m n';
+  function showDamnIn(){
+    replaceTaken.innerHTML = '';
+    const d = document.createElement('div');
+    d.className = 'damn';
+    d.innerHTML = '<span>D</span>&nbsp;<span>a</span>&nbsp;<span>m</span>&nbsp;<span>n</span>';
     replaceTaken.appendChild(d);
   }
 
-  envSingle.addEventListener('click',()=>openEnv(envSingle,msgSingle,true,false));
-  envTaken.addEventListener('click',()=>openEnv(envTaken,msgTaken,false,true));
+  envSingle.addEventListener('click', ()=> openEnv(envSingle, msgSingle, true, false));
+  envTaken.addEventListener('click', ()=> openEnv(envTaken, msgTaken, false, true));
+
+  [envSingle, envTaken].forEach(el=>{
+    el.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+  });
 </script>
 </body>
 </html>
