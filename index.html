@@ -147,15 +147,33 @@ button:focus, img:focus, div:focus, a:focus {
 .heart:nth-child(2){top:40%;left:80%;animation-delay:1s;}
 .heart:nth-child(3){top:70%;left:30%;animation-delay:2s;}
 .heart:nth-child(4){top:85%;left:60%;animation-delay:3s;}
+
+/* Play button */
+#playButton {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  font-size: 8px;
+  padding: 6px 10px;
+  background: #ffb6d2;
+  border: 2px solid #c33e6a;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #c33e6a;
+}
+#playButton:hover {transform: scale(1.05);}
 </style>
 </head>
 <body>
 
-<!-- background music (Daisy Bell by Bell Labs computer) -->
-<audio id="bgmusic" autoplay loop preload="auto" volume="0.3">
+<!-- background music -->
+<audio id="bgmusic" loop preload="auto">
   <source src="https://upload.wikimedia.org/wikipedia/commons/5/57/Bell_Labs_Daisy_Bell.ogg" type="audio/ogg">
-  Your browser does not support the audio element.
 </audio>
+
+<!-- play toggle -->
+<button id="playButton">🔊 Play</button>
 
 <div class="heart"></div>
 <div class="heart"></div>
@@ -190,12 +208,23 @@ const taken = document.getElementById('taken');
 const letter = document.getElementById('letter');
 const replaceTaken = document.getElementById('replaceTaken');
 const music = document.getElementById('bgmusic');
+const playButton = document.getElementById('playButton');
 
-// unmute after any user interaction (for autoplay policy)
-document.body.addEventListener('click', () => {
-  music.muted = false;
-  music.volume = 0.25;
-}, { once: true });
+playButton.addEventListener('click', () => {
+  if (music.paused) {
+    music.volume = 0;
+    music.play();
+    let v = 0;
+    const fade = setInterval(() => {
+      if (v < 0.25) { v += 0.01; music.volume = v; }
+      else clearInterval(fade);
+    }, 80);
+    playButton.textContent = "🔇 Pause";
+  } else {
+    music.pause();
+    playButton.textContent = "🔊 Play";
+  }
+});
 
 single.addEventListener('click', ()=>{
   single.classList.toggle('open');
