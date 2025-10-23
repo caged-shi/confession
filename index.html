@@ -151,6 +151,12 @@ button:focus, img:focus, div:focus, a:focus {
 </head>
 <body>
 
+<!-- background music (Daisy Bell by Bell Labs computer) -->
+<audio id="bgmusic" autoplay loop preload="auto" volume="0.3">
+  <source src="https://upload.wikimedia.org/wikipedia/commons/5/57/Bell_Labs_Daisy_Bell.ogg" type="audio/ogg">
+  Your browser does not support the audio element.
+</audio>
+
 <div class="heart"></div>
 <div class="heart"></div>
 <div class="heart"></div>
@@ -183,6 +189,13 @@ const single = document.getElementById('single');
 const taken = document.getElementById('taken');
 const letter = document.getElementById('letter');
 const replaceTaken = document.getElementById('replaceTaken');
+const music = document.getElementById('bgmusic');
+
+// unmute after any user interaction (for autoplay policy)
+document.body.addEventListener('click', () => {
+  music.muted = false;
+  music.volume = 0.25;
+}, { once: true });
 
 single.addEventListener('click', ()=>{
   single.classList.toggle('open');
