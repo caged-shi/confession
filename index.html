@@ -3,17 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>💌 Coquette Confession</title>
+<title>💌 A Little Letter For You</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@500&display=swap');
 
   body {
     margin: 0;
     height: 100vh;
-    background: linear-gradient(180deg, #fff6fa, #fdebf2);
-    background-image: url('https://i.ibb.co/mFftMXq/lace-bg.png');
-    background-repeat: repeat;
-    background-size: 300px;
+    background: linear-gradient(180deg, #ffeef5, #fff8fb);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -26,68 +23,101 @@
   h1 {
     font-family: 'Great Vibes', cursive;
     color: #b87b9c;
-    font-size: 2.3rem;
-    margin-bottom: 40px;
-    text-shadow: 0 0 8px #f8d7e6;
+    font-size: 2.5rem;
+    margin: 10px 0 40px 0;
+    text-shadow: 0 0 10px #f8d7e6;
   }
 
   .letters {
     display: flex;
-    gap: 50px;
+    gap: 60px;
   }
 
+  /* Envelope base */
   .envelope {
     position: relative;
-    width: 220px;
-    height: 160px;
-    background: #fff;
-    border: 3px solid #f5c6d8;
-    border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 240px;
+    height: 170px;
+    background: #fff8f9;
+    border: 3px solid #f8c8d8;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
     cursor: pointer;
-    transition: transform 0.4s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: url('https://i.ibb.co/SK9CmLp/mail-bg.png');
-    background-size: cover;
+    transition: transform 0.3s ease;
+    overflow: hidden;
   }
 
   .envelope:hover {
-    transform: translateY(-6px) scale(1.05);
+    transform: translateY(-5px);
   }
 
-  .envelope h3 {
-    font-size: 1.1rem;
-    background: #f9c7d8;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 20px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-  }
-
-  .message {
+  /* Flap */
+  .flap {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background: #fffafc;
-    border-radius: 10px;
+    height: 50%;
+    background: #ffd9e8;
+    border-bottom: 3px solid #f8c8d8;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    transform-origin: top;
+    transition: transform 0.8s ease;
+    z-index: 2;
+  }
+
+  /* Seal */
+  .seal {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f9a8c0;
+    color: white;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 3;
+  }
+
+  /* Text label */
+  .envelope h3 {
+    margin-top: 120px;
+    font-size: 1.2rem;
+    color: #b25b83;
     text-align: center;
-    padding: 20px;
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Message */
+  .message {
+    position: absolute;
+    inset: 0;
+    background: #fffafc;
+    border-radius: 12px;
+    text-align: center;
+    padding: 25px;
     box-sizing: border-box;
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.8s ease;
+    z-index: 1;
   }
 
   .message p {
     font-size: 1rem;
     font-style: italic;
     margin-top: 10px;
+    color: #744d63;
   }
 
   @keyframes fadeIn {
@@ -95,6 +125,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Floating petals */
   .petal {
     position: fixed;
     width: 10px;
@@ -111,6 +142,7 @@
     100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
   }
 
+  /* Cat */
   .cat {
     position: fixed;
     bottom: 50px;
@@ -120,6 +152,7 @@
     height: 90px;
     image-rendering: pixelated;
     animation: bounce 1s infinite ease-in-out;
+    z-index: 10;
   }
 
   @keyframes bounce {
@@ -133,13 +166,20 @@
     font-size: 0.8rem;
     color: #a97a93;
   }
+
+  /* When envelope opens */
+  .open .flap {
+    transform: rotateX(180deg);
+  }
 </style>
 </head>
 <body>
-<h1>💌 Choose Your Letter</h1>
+<h1>💌 A Little Letter For You</h1>
 <div class="letters">
   <div class="envelope" id="single">
-    <h3>For the Single 💖</h3>
+    <div class="flap"></div>
+    <div class="seal">💖</div>
+    <h3>For the Single</h3>
     <div class="message" id="singleMsg">
       <h4>To my lovely you 💕</h4>
       <p>Roses are red while some are white,<br>
@@ -150,7 +190,9 @@
   </div>
 
   <div class="envelope" id="taken">
-    <h3>For the Taken 💔</h3>
+    <div class="flap"></div>
+    <div class="seal">💔</div>
+    <h3>For the Taken</h3>
     <div class="message" id="takenMsg">
       <h4>To someone loved 🌹</h4>
       <p>That’s okay! Love blooms in many ways,<br>
@@ -167,15 +209,20 @@ const taken = document.getElementById('taken');
 const singleMsg = document.getElementById('singleMsg');
 const takenMsg = document.getElementById('takenMsg');
 
-single.addEventListener('click', () => {
-  singleMsg.style.display = 'flex';
-  spawnPetals();
-  showCat();
-});
+single.addEventListener('click', () => openLetter(single, singleMsg, true));
+taken.addEventListener('click', () => openLetter(taken, takenMsg, false));
 
-taken.addEventListener('click', () => {
-  takenMsg.style.display = 'flex';
-});
+function openLetter(envelope, msg, petals) {
+  const flap = envelope.querySelector('.flap');
+  flap.style.transform = 'rotateX(180deg)';
+  setTimeout(() => {
+    msg.style.display = 'flex';
+    if (petals) {
+      spawnPetals();
+      showCat();
+    }
+  }, 700);
+}
 
 function spawnPetals() {
   for (let i = 0; i < 25; i++) {
@@ -191,7 +238,7 @@ function spawnPetals() {
 
 function showCat() {
   const cat = document.createElement('img');
-  cat.src = 'https://i.ibb.co/5hk2YHk/pixel-cat.gif'; // cute 8-bit cat
+  cat.src = 'https://i.ibb.co/wN6LxRs/pixel-cat-please.gif';
   cat.className = 'cat';
   document.body.appendChild(cat);
   setTimeout(() => cat.remove(), 7000);
@@ -199,4 +246,3 @@ function showCat() {
 </script>
 </body>
 </html>
-
