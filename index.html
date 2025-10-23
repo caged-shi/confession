@@ -6,7 +6,7 @@
   <title>💌 A Little Letter for You 💌</title>
   <style>
     body {
-      background: #fce4ec;
+      background: linear-gradient(to bottom right, #ffe4ec, #fff0f6);
       font-family: "Georgia", serif;
       display: flex;
       justify-content: center;
@@ -17,20 +17,58 @@
     }
 
     .envelope {
+      position: relative;
+      width: 320px;
+      height: 200px;
       background: #fff0f6;
       border: 2px solid #f8bbd0;
-      padding: 30px;
-      width: 300px;
-      border-radius: 16px;
-      box-shadow: 0 6px 15px rgba(255, 182, 193, 0.4);
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(255, 182, 193, 0.5);
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.6s ease;
+      transform-style: preserve-3d;
+    }
+
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: #f8bbd0;
+      border-bottom: 2px solid #f48fb1;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      transform-origin: top;
+      transition: transform 0.6s ease;
+      z-index: 2;
+    }
+
+    .letter-content {
+      position: absolute;
+      inset: 0;
+      padding: 25px;
       text-align: center;
-      transition: all 0.4s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
+      z-index: 1;
+    }
+
+    .open .flap {
+      transform: rotateX(-180deg);
+    }
+
+    .open .letter-content {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     h1 {
       color: #d81b60;
-      font-size: 1.4em;
-      margin-bottom: 20px;
+      font-size: 1.3em;
+      margin-bottom: 10px;
     }
 
     .buttons button {
@@ -40,7 +78,7 @@
       font-weight: bold;
       padding: 10px 18px;
       border-radius: 20px;
-      margin: 10px;
+      margin: 8px;
       cursor: pointer;
       transition: 0.3s;
     }
@@ -53,40 +91,76 @@
     .message {
       display: none;
       margin-top: 20px;
-      animation: fadeIn 1s forwards;
       color: #880e4f;
-      font-size: 1.1em;
+      font-size: 1.05em;
       line-height: 1.4em;
+      animation: fadeIn 1s forwards;
     }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Floating hearts */
+    .heart {
+      position: fixed;
+      color: #ec407a;
+      font-size: 18px;
+      animation: floatUp 3s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
+    }
   </style>
 </head>
 <body>
   <div class="envelope" id="envelope">
-    <h1>💌 A Letter Awaits You 💌</h1>
-    <p>Are you single?</p>
-    <div class="buttons">
-      <button onclick="showSingle()">Single 💖</button>
-      <button onclick="showTaken()">Not Single 💔</button>
+    <div class="flap"></div>
+    <div class="letter-content">
+      <h1>💌 A Letter Awaits You 💌</h1>
+      <p>Are you single?</p>
+      <div class="buttons">
+        <button onclick="showSingle()">Single 💖</button>
+        <button onclick="showTaken()">Not Single 💔</button>
+      </div>
+      <div class="message" id="message"></div>
     </div>
-    <div class="message" id="message"></div>
   </div>
 
   <script>
+    const envelope = document.getElementById('envelope');
+    envelope.addEventListener('click', () => {
+      envelope.classList.add('open');
+    });
+
     function showSingle() {
-      document.getElementById("message").style.display = "block";
-      document.getElementById("message").innerHTML =
+      const message = document.getElementById("message");
+      message.style.display = "block";
+      message.innerHTML =
         "🌹 Roses are red while some are white<br>💐 Violet is a mix of both red and blue<br>💞 But most importantly...<br><strong>Can I ask a date with you?</strong>";
+      createHearts();
     }
 
     function showTaken() {
-      document.getElementById("message").style.display = "block";
-      document.getElementById("message").innerHTML =
-        "Awh, lucky them! 💕<br>You deserve all the love in the world 💌";
+      const message = document.getElementById("message");
+      message.style.display = "block";
+      message.innerHTML = "Awh, lucky them! 💕<br>You deserve all the love in the world 💌";
+    }
+
+    function createHearts() {
+      for (let i = 0; i < 12; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = 2 + Math.random() * 2 + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 4000);
+      }
     }
   </script>
 </body>
