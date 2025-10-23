@@ -3,302 +3,263 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>💌 Pixel Coquette Letter</title>
+<title>💌 Pixel Coquette Letters</title>
 
-<!-- Pixel font -->
+<!-- Pixel font for headings / DAMN text -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --bg-pink:#fff0f5;
-    --accent:#f7a7c1;
-    --accent-2:#ffd7e6;
-    --text:#6b3547;
-    --pixel-size:4px; /* simulate pixel scale */
+    --bg:#fff6fa;
+    --accent:#ffb6d2;
+    --paper:#fffafc;
+    --text:#6b3550;
   }
 
-  /* page */
-  html,body{height:100%; margin:0; font-family: "Press Start 2P", monospace; -webkit-font-smoothing: none; -moz-osx-font-smoothing: grayscale;}
-  body{
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    background: url('images/cat-bg.png') center/cover no-repeat fixed, linear-gradient(180deg,#fff6fb,#fff0f5);
-    background-blend-mode: overlay;
-    color:var(--text);
-    overflow:hidden;
-  }
+  html,body{height:100%; margin:0; font-family: 'Press Start 2P', monospace; background:var(--bg); color:var(--text);}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;overflow:hidden;padding:24px;}
 
-  /* overlay soft blur so background cat doesn't overpower */
-  body::after{
-    content:""; position:fixed; inset:0; background:rgba(255,240,246,0.55); pointer-events:none;
-    backdrop-filter: blur(2px);
-  }
+  header{ text-align:center; z-index:3;}
+  header h1{font-family:'Press Start 2P'; font-size:18px; color:#db5a8b; margin:0 0 6px;}
+  header p{font-size:10px; color:#b36a8b; margin:0;}
 
-  header{
-    z-index:5;
-    text-align:center;
-    margin-bottom:28px;
-  }
-  header h1{
-    font-family:"Press Start 2P", monospace;
-    font-size:18px;
-    letter-spacing:1px;
-    color:#d05a85;
-    margin:0;
-    text-shadow: 0 0 6px rgba(255,255,255,0.6);
-  }
-  header p{
-    margin:8px 0 0; font-size:9px; color:#b36a8b; opacity:0.9;
-  }
+  /* layout */
+  .letters{display:flex; gap:36px; align-items:flex-start; z-index:2;}
+  @media (max-width:720px){ .letters{flex-direction:column;align-items:center;} }
 
-  /* layout for letters */
-  .letters{
-    display:flex; gap:48px; z-index:5; align-items:center;
-  }
+  /* envelope container */
+  .env{width:220px;height:160px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;}
+  .env .card{width:220px;height:160px;display:flex;align-items:center;justify-content:center;position:relative;}
 
-  /* Pixel envelope base: we build a blocky pixel look by using borders and a scaled transform */
-  .envelope{
-    width:220px; height:150px;
-    position:relative;
-    background: linear-gradient(180deg,#fffdfd,#fff8fb);
-    border-radius:6px;
-    border: 6px solid var(--accent-2);
-    box-shadow: 0 8px 0 rgba(0,0,0,0.06);
-    cursor:pointer;
-    transform:scale(1);
-    transition: transform .15s linear;
-    image-rendering: pixelated;
-    /* emulate pixel edge using box-shadow "steps" - gives a blocky border feel */
-    box-shadow:
-      0 8px 0 rgba(0,0,0,0.08),
-      6px 0 0 var(--accent-2),
-      -6px 0 0 var(--accent-2),
-      0 -6px 0 var(--accent-2);
-    display:flex; align-items:center; justify-content:center;
-    user-select:none;
-  }
-
-  .envelope:active{ transform:translateY(2px) scale(.995); }
-
-  /* small pixel stamp / label */
-  .label{
-    position:absolute; top:12px; left:12px;
-    background:var(--accent); color:white; padding:6px 10px; border-radius:6px;
-    font-size:9px; box-shadow: 0 3px 0 rgba(0,0,0,0.06);
-  }
-
-  /* flap (pixel style) */
-  .flap{
-    position:absolute; inset:0; height:55%;
-    top:-2px; left:0;
-    background: linear-gradient(180deg,#ffdce9,#ffd1e6);
-    border-bottom:6px solid #f6b6cf;
-    border-top-left-radius:4px; border-top-right-radius:4px;
-    transform-origin: top;
-    transform: rotateX(0deg);
-    transition: transform .6s cubic-bezier(.2,.9,.3,1);
-    z-index:6;
+  /* message panel (fits inside envelope when open) */
+  .message{
+    position:absolute; width:184px; height:104px; left:18px; top:36px;
+    background:linear-gradient(#fffefc,#fff3f8);
+    border:4px solid #ffdfe9; border-radius:6px;
+    display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;box-sizing:border-box;
+    font-size:11px;line-height:1.25;color:var(--text);
+    opacity:0; transform:translateY(6px); transition:opacity .25s linear, transform .25s linear;
     pointer-events:none;
   }
+  .message.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
 
-  /* small heart-pixel on flap center */
-  .flap::after{
-    content:"♥";
-    position:absolute; left:50%; top:46%;
-    transform:translate(-50%,-50%);
-    font-size:14px; color:#b93f73; filter: drop-shadow(0 1px 0 rgba(255,255,255,.4));
+  /* The pixel SVGs scale up crisply */
+  svg.pixel { width:180px; height:120px; image-rendering:pixelated; shape-rendering:crispEdges; }
+
+  /* flap animation: rotateX like opening but stepped to feel pixel-y */
+  .flap-g { transform-origin: 50% 0%; transform: rotateX(0deg); transition: transform 700ms steps(5, end); }
+  .env.open .flap-g { transform: rotateX(180deg); }
+
+  /* small label below each */
+  .label { margin-top:8px; font-size:10px; color:#b35a7e; text-align:center; }
+
+  /* pixel petals */
+  .petal{ position:fixed; width:10px; height:10px; border-radius:2px; z-index:40; image-rendering:pixelated; }
+  @keyframes fall {
+    0%{ transform: translateY(-10vh) rotate(0deg); opacity:1}
+    100%{ transform: translateY(100vh) rotate(360deg); opacity:0}
   }
 
-  /* headline inside envelope (visible before open) */
-  .title{
-    z-index:3; pointer-events:none; font-size:10px; color:#9b4067; text-align:center;
+  /* cat (medium) - shows on top */
+  .cat-svg{ position:fixed; bottom:36px; left:50%; transform:translateX(-50%); width:120px; height:120px; z-index:45; image-rendering:pixelated; animation:catbob 900ms infinite; }
+  @keyframes catbob { 0%{ transform:translate(-50%,0)} 50%{transform:translate(-50%,-8px)} 100%{transform:translate(-50%,0)} }
+
+  /* DAMN text style (pixel font) */
+  .damn { font-family: 'Press Start 2P'; font-size:14px; color:#b43f6b; letter-spacing:8px; }
+
+  /* subtle sparkle background pixels */
+  .sparkle{
+    position: absolute; width:6px; height:6px; background:#ffd6ea; border-radius:2px; opacity:.9; box-shadow:0 2px 0 rgba(0,0,0,0.05);
+    filter: blur(.2px);
   }
-
-  /* Message card that slides up from inside (pixel blocky card) */
-  .message{
-    display:none;
-    position:absolute; inset:16px;
-    background: linear-gradient(180deg,#fffafc,#fff3f7);
-    border:4px solid #ffdfea;
-    border-radius:6px;
-    padding:12px;
-    box-sizing:border-box;
-    z-index:5;
-    text-align:center;
-    transform: translateY(8px);
-    transition: transform .35s ease, opacity .35s ease;
-    opacity:0;
-    font-size:10px;
-    color:#6f3b50;
-    line-height:1.3;
-  }
-
-  .message.show{ display:flex; flex-direction:column; justify-content:center; opacity:1; transform:translateY(0); }
-
-  /* little pixel button inside message (for Single we keep it automatic) */
-  .message .ok{
-    margin-top:10px; font-size:9px; padding:6px 8px; border-radius:6px; background:var(--accent); color:#fff;
-    border:none; cursor:pointer;
-  }
-
-  /* pixel-ish decorations under */
-  .pixels{
-    position:absolute; bottom:8px; left:50%; transform:translateX(-50%); display:flex; gap:6px; z-index:4;
-  }
-  .pixels .p{ width:8px; height:8px; background:#ffb3cf; border-radius:2px; box-shadow: 0 2px 0 rgba(0,0,0,0.06); }
-
-  /* petal and cat */
-  .petal{ position:fixed; width:10px;height:10px;border-radius:2px; pointer-events:none; z-index:40; image-rendering:pixelated; }
-  .cat{
-    position:fixed; bottom:34px; left:50%; transform:translateX(-50%);
-    width:96px; height:96px; image-rendering:pixelated; z-index:45; animation:bounce 900ms infinite;
-  }
-  @keyframes bounce{ 0%{ transform: translate(-50%,0)} 50%{ transform:translate(-50%,-8px)} 100%{ transform:translate(-50%,0)} }
-
-  /* responsive */
-  @media (max-width:640px){
-    .letters{ gap:18px; }
-    .envelope{ width:180px; height:130px; }
-    .cat{ width:72px; height:72px; }
-  }
-
 </style>
 </head>
 <body>
-  <header>
-    <h1>💌 A Little Letter For You</h1>
-    <p>click an envelope — pixel coquette style</p>
-  </header>
 
-  <main class="letters" role="main" aria-label="choose letter">
-    <!-- SINGLE envelope -->
-    <div class="envelope" id="env-single" tabindex="0" role="button" aria-pressed="false" aria-label="Open single letter">
-      <div class="flap"></div>
-      <div class="label">SINGLE ♥</div>
-      <div class="title">For the Single</div>
-      <div class="pixels" aria-hidden="true">
-        <div class="p"></div><div class="p"></div><div class="p"></div>
-      </div>
+<header>
+  <h1>💌 Pixel Coquette Letters</h1>
+  <p>click a pixel envelope — flap opens in pixel style</p>
+</header>
 
+<main class="letters" aria-label="choose letter">
+  <!-- SINGLE envelope -->
+  <div class="env" id="env-single" role="button" tabindex="0" aria-label="Open single letter">
+    <div class="card">
+      <!-- inline SVG pixel-envelope (flap is a group .flap-g so we can rotate it) -->
+      <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- envelope body (pixel-style) -->
+        <rect x="0" y="6" width="48" height="26" fill="#fff7fb" stroke="#ffdfe9" stroke-width="1"/>
+        <!-- flap group -->
+        <g class="flap-g">
+          <rect x="0" y="0" width="48" height="16" fill="#ffd7e8" stroke="#f7b6cf" stroke-width="1"/>
+          <!-- heart seal block (drawn as pixels) -->
+          <g transform="translate(20,6)">
+            <rect x="0" y="0" width="2" height="2" fill="#b93f73"/>
+            <rect x="2" y="0" width="2" height="2" fill="#b93f73"/>
+            <rect x="1" y="2" width="2" height="2" fill="#b93f73"/>
+          </g>
+        </g>
+
+        <!-- pixel shadow under flap (to emphasize) -->
+        <rect x="0" y="15.5" width="48" height="1" fill="#f0b6c9" opacity="0.6"/>
+
+        <!-- decorative postage pixel -->
+        <rect x="4" y="22" width="6" height="4" fill="#ffd1e6" stroke="#ffb6d2" stroke-width="0.3"/>
+
+        <!-- small title text simulated with rectangles (pixel title) -->
+        <g transform="translate(12,22)">
+          <rect x="0" y="0" width="2" height="1" fill="#e889b0"/>
+          <rect x="3" y="0" width="2" height="1" fill="#e889b0"/>
+        </g>
+      </svg>
+
+      <!-- message card (hidden until open) -->
       <div class="message" id="msg-single" aria-hidden="true">
-        <div><strong>To my lovely you ♥</strong></div>
-        <div style="margin-top:10px;">
-          Roses are red while some are white,<br>
-          Violet is a mix of both red and blue,<br>
-          But most importantly,<br>
-          Can I ask a date with you? 💐
+        <div>
+          <strong>To my lovely you ♥</strong><br>
+          <div style="margin-top:8px;">
+            Roses are red while some are white,<br>
+            Violet is a mix of both red and blue,<br>
+            But most importantly,<br>
+            Can I ask a date with you? 💐
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- TAKEN envelope -->
-    <div class="envelope" id="env-taken" tabindex="0" role="button" aria-pressed="false" aria-label="Open not single letter">
-      <div class="flap"></div>
-      <div class="label" style="background:#d8c8d7;color:#6b3a51;">TAKEN 💔</div>
-      <div class="title">For the Taken</div>
-      <div class="pixels" aria-hidden="true">
-        <div class="p" style="background:#ffd1e6"></div><div class="p" style="background:#ffd1e6"></div><div class="p" style="background:#ffd1e6"></div>
-      </div>
+    <div class="label">Single 💖</div>
+  </div>
+
+  <!-- TAKEN envelope -->
+  <div class="env" id="env-taken" role="button" tabindex="0" aria-label="Open taken letter">
+    <div class="card">
+      <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="0" y="6" width="48" height="26" fill="#fffaf8" stroke="#ffe6ee" stroke-width="1"/>
+        <g class="flap-g">
+          <rect x="0" y="0" width="48" height="16" fill="#ffe8ee" stroke="#f6cbd9" stroke-width="1"/>
+          <g transform="translate(20,6)">
+            <rect x="0" y="0" width="2" height="2" fill="#bd5b6f"/>
+            <rect x="2" y="0" width="2" height="2" fill="#bd5b6f"/>
+            <rect x="1" y="2" width="2" height="2" fill="#bd5b6f"/>
+          </g>
+        </g>
+        <rect x="0" y="15.5" width="48" height="1" fill="#f1b6c9" opacity="0.5"/>
+        <rect x="4" y="22" width="6" height="4" fill="#ffe5ef" stroke="#ffd8ea" stroke-width="0.3"/>
+      </svg>
 
       <div class="message" id="msg-taken" aria-hidden="true">
-        <div><strong>To someone loved</strong></div>
-        <div style="margin-top:10px;">
-          That’s okay — love blooms in many ways.<br>
-          I hope your heart stays warm and happy always. 💞
+        <div>
+          <strong class="damn">D a m n</strong>
         </div>
       </div>
     </div>
-  </main>
+
+    <div class="label">Taken 💔</div>
+  </div>
+</main>
+
+<!-- optional pixel sparkles placed around -->
+<div class="sparkle" style="left:12%;top:18%;"></div>
+<div class="sparkle" style="left:82%;top:24%;"></div>
+<div class="sparkle" style="left:40%;top:6%;"></div>
 
 <script>
-/* --- configuration --- */
-const catGif = "https://i.ibb.co/wN6LxRs/pixel-cat-please.gif"; // pleading pixel cat GIF (hosted externally)
-const singleBgPath = "images/cat-bg.png"; // <-- upload your 8-bit cat to repo at this path
+  // DOM refs
+  const envSingle = document.getElementById('env-single');
+  const envTaken  = document.getElementById('env-taken');
+  const msgSingle = document.getElementById('msg-single');
+  const msgTaken  = document.getElementById('msg-taken');
 
-/* select DOM */
-const envSingle = document.getElementById("env-single");
-const envTaken = document.getElementById("env-taken");
-const msgSingle = document.getElementById("msg-single");
-const msgTaken = document.getElementById("msg-taken");
+  // Pixel cat built in SVG (drawn below when needed)
+  function insertCat(){
+    if(document.querySelector('.cat-svg')) return; // prevent duplicates
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class','cat-svg');
+    svg.setAttribute('viewBox','0 0 24 24');
+    svg.setAttribute('aria-hidden','true');
+    // Build cat via many small rects (pixel blocks) to match your provided cat look (pink tones)
+    // We'll construct a compact 12x12 pixel cat scaled by viewBox
+    const pixels = [
+      /* each item: [x,y,color]  (design simplified copy of your provided cat) */
+      // row 0
+      [4,0,'#f7c7d7'],[5,0,'#f7c7d7'],[6,0,'#f7c7d7'],
+      // row1
+      [3,1,'#f7c7d7'],[4,1,'#f7c7d7'],[5,1,'#f39fbf'],[6,1,'#f39fbf'],[7,1,'#f7c7d7'],
+      // row2
+      [2,2,'#f7c7d7'],[3,2,'#f39fbf'],[4,2,'#e6769e'],[5,2,'#c94a70'],[6,2,'#e6769e'],[7,2,'#f39fbf'],[8,2,'#f7c7d7'],
+      // row3 (eyes)
+      [2,3,'#f7c7d7'],[3,3,'#e6769e'],[4,3,'#2b1b2b'],[5,3,'#fff6fb'],[6,3,'#fff6fb'],[7,3,'#2b1b2b'],[8,3,'#e6769e'],
+      // row4
+      [2,4,'#f7c7d7'],[3,4,'#e6769e'],[4,4,'#c94a70'],[5,4,'#e89dbb'],[6,4,'#c94a70'],[7,4,'#e6769e'],[8,4,'#f7c7d7'],
+      // row5
+      [3,5,'#f39fbf'],[4,5,'#f39fbf'],[5,5,'#e6769e'],[6,5,'#f39fbf'],[7,5,'#f39fbf'],
+      // row6 body
+      [4,6,'#ffd1e6'],[5,6,'#ffd1e6'],[6,6,'#ffd1e6'],
+      [3,7,'#ffd1e6'],[4,7,'#ffb6d2'],[5,7,'#ffb6d2'],[6,7,'#ffb6d2'],[7,7,'#ffd1e6'],
+      [2,8,'#ffd1e6'],[3,8,'#ffd1e6'],[4,8,'#ffb6d2'],[5,8,'#ffb6d2'],[6,8,'#ffb6d2'],[7,8,'#ffd1e6'],[8,8,'#ffd1e6'],
+      [4,9,'#ffd1e6'],[5,9,'#ffd1e6'],[6,9,'#ffd1e6']
+    ];
 
-/* helper: open envelope animation (flap rotate) */
-function openEnvelope(envEl, msgEl, withEffects=false){
-  // flap element
-  const flap = envEl.querySelector(".flap");
-  // rotate flap up (simulate open)
-  flap.style.transform = "rotateX(180deg)";
-  // after flap opens, show message
-  setTimeout(()=>{
-    msgEl.classList.add("show");
-    msgEl.setAttribute("aria-hidden","false");
-    if(withEffects) {
-      spawnPetals();
-      showCat();
-    }
-  }, 650);
-}
+    // draw rects sized to viewbox scale (we'll choose pixel size = 1 for small sprite)
+    pixels.forEach(([x,y,color])=>{
+      const r = document.createElementNS(ns,'rect');
+      r.setAttribute('x', x);
+      r.setAttribute('y', y);
+      r.setAttribute('width', 1);
+      r.setAttribute('height', 1);
+      r.setAttribute('fill', color);
+      svg.appendChild(r);
+    });
 
-/* spawn gentle pixel petals */
-function spawnPetals(){
-  const colors = ["#f8b8c8","#f4a3b4","#ffd1dc","#ffd6ea"];
-  for(let i=0;i<22;i++){
-    const pet = document.createElement("div");
-    pet.className = "petal";
-    pet.style.left = (Math.random()*100) + "vw";
-    pet.style.top = (-10 - Math.random()*30) + "vh";
-    pet.style.width = (6 + Math.random()*10) + "px";
-    pet.style.height = pet.style.width;
-    pet.style.background = colors[Math.floor(Math.random()*colors.length)];
-    pet.style.opacity = 0.9;
-    pet.style.borderRadius = "2px";
-    // animate down using CSS transitions via JS
-    document.body.appendChild(pet);
-    // apply animation via requestAnimationFrame (start)
-    (function(el, dur){
-      el.animate([
-        { transform: `translateY(0) rotate(0deg)`, opacity:1 },
-        { transform: `translateY(${80 + Math.random()*60}vh) rotate(${360 + Math.random()*360}deg)`, opacity:0 }
-      ], { duration: 3500 + Math.random()*1800, easing: 'cubic-bezier(.2,.9,.3,1)'});
-      setTimeout(()=> el.remove(), 5500);
-    })(pet);
+    // add a tiny face highlight or paw - optional (kept simple)
+    document.body.appendChild(svg);
+    // remove after 7s
+    setTimeout(()=> svg.remove(), 7000);
   }
-}
 
-/* show bouncing pixel cat */
-function showCat(){
-  // avoid duplicate cats
-  if(document.querySelector(".cat")) return;
-  const img = document.createElement("img");
-  img.src = catGif;
-  img.className = "cat";
-  img.alt = "pixel cat pleading";
-  document.body.appendChild(img);
-  setTimeout(()=> img.remove(), 7200);
-}
-
-/* click handlers: open envelopes */
-envSingle.addEventListener("click", ()=> {
-  // if already open, do nothing
-  if(msgSingle.classList.contains("show")) return;
-  openEnvelope(envSingle, msgSingle, true);
-});
-envTaken.addEventListener("click", ()=> {
-  if(msgTaken.classList.contains("show")) return;
-  openEnvelope(envTaken, msgTaken, false);
-});
-
-/* keyboard access (enter/space) */
-[envSingle, envTaken].forEach(el=>{
-  el.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      el.click();
+  // spawn pixel petals
+  function spawnPetals(){
+    const colors = ['#f9bfd1','#ffd1e6','#ffc4d9'];
+    for(let i=0;i<18;i++){
+      const el = document.createElement('div');
+      el.className = 'petal';
+      el.style.left = (Math.random()*90 + 5) + 'vw';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.top = (-5 - Math.random()*20) + 'vh';
+      el.style.width = (6 + Math.random()*8) + 'px';
+      el.style.height = el.style.width;
+      document.body.appendChild(el);
+      el.animate([
+        { transform: 'translateY(0) rotate(0deg)', opacity:1 },
+        { transform: `translateY(${90 + Math.random()*60}vh) rotate(${360 + Math.random()*360}deg)`, opacity:0 }
+      ], { duration: 3200 + Math.random()*1800, easing: 'cubic-bezier(.2,.9,.3,1)'});
+      setTimeout(()=> el.remove(), 5500);
     }
-  });
-});
+  }
 
-/* if you'd like the background to fallback to the image path you uploaded, the CSS already uses
-   images/cat-bg.png — ensure the file is uploaded there in your repo. If not, you can change the path
-   above in the singleBgPath variable (not required unless you want to dynamically swap it). */
+  // open function (pixel-stepped via CSS transition steps)
+  function openEnv(envEl, msgEl, withEffects){
+    if(envEl.classList.contains('open')) return;
+    envEl.classList.add('open');
+    // show message slightly after flap opens
+    setTimeout(()=> {
+      msgEl.classList.add('show');
+      msgEl.setAttribute('aria-hidden','false');
+      if(withEffects){ spawnPetals(); insertCat(); }
+    }, 700);
+  }
+
+  envSingle.addEventListener('click', ()=> openEnv(envSingle, msgSingle, true));
+  envTaken.addEventListener('click', ()=> openEnv(envTaken, msgTaken, false));
+
+  // keyboard accessibility
+  [envSingle, envTaken].forEach(el=>{
+    el.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+  });
+
 </script>
 </body>
 </html>
