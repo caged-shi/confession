@@ -5,204 +5,234 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>💌 Pixel Coquette Letters</title>
 
-<!-- Pixel font for headings / DAMN text -->
+<!-- Pixel font -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --bg:#fff6fa;
-    --accent:#ffb6d2;
-    --paper:#fffafc;
-    --text:#6b3550;
+    --bg-pink: #ffdff0; /* slightly more vibrant pastel */
+    --paper: #fffaf8;
+    --accent: #ffb6d2;
+    --text: #6b3550;
+    --pixel-step: steps(6);
   }
 
-  html,body{height:100%; margin:0; font-family: 'Press Start 2P', monospace; background:var(--bg); color:var(--text);}
-  body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;overflow:hidden;padding:24px;}
-
-  header{ text-align:center; z-index:3;}
-  header h1{font-family:'Press Start 2P'; font-size:18px; color:#db5a8b; margin:0 0 6px;}
-  header p{font-size:10px; color:#b36a8b; margin:0;}
-
-  /* layout */
-  .letters{display:flex; gap:36px; align-items:flex-start; z-index:2;}
-  @media (max-width:720px){ .letters{flex-direction:column;align-items:center;} }
-
-  /* envelope container */
-  .env{width:220px;height:160px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;}
-  .env .card{width:220px;height:160px;display:flex;align-items:center;justify-content:center;position:relative;}
-
-  /* message panel (fits inside envelope when open) */
-  .message{
-    position:absolute; width:184px; height:104px; left:18px; top:36px;
-    background:linear-gradient(#fffefc,#fff3f8);
-    border:4px solid #ffdfe9; border-radius:6px;
-    display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;box-sizing:border-box;
-    font-size:11px;line-height:1.25;color:var(--text);
-    opacity:0; transform:translateY(6px); transition:opacity .25s linear, transform .25s linear;
-    pointer-events:none;
+  html,body{height:100%; margin:0; font-family: 'Press Start 2P', monospace; background:var(--bg-pink); color:var(--text);}
+  body{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;overflow:hidden;padding:28px;
+    -webkit-font-smoothing: none; -moz-osx-font-smoothing: grayscale;
   }
-  .message.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
 
-  /* The pixel SVGs scale up crisply */
-  svg.pixel { width:180px; height:120px; image-rendering:pixelated; shape-rendering:crispEdges; }
+  header{ text-align:center; z-index:3; }
+  header h1{ font-size:20px; color:#d25084; margin:0 0 4px; }
+  header p{ font-size:10px; color:#b56b8a; margin:0; }
 
-  /* flap animation: rotateX like opening but stepped to feel pixel-y */
-  .flap-g { transform-origin: 50% 0%; transform: rotateX(0deg); transition: transform 700ms steps(5, end); }
+  main.letters{ display:flex; gap:36px; align-items:flex-start; z-index:2; }
+  @media (max-width:720px){ main.letters{ flex-direction:column; align-items:center; } }
+
+  /* envelope wrapper */
+  .env {
+    width:240px; height:170px; position:relative; cursor:pointer; user-select:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .card {
+    width:220px; height:150px; position:relative; display:block;
+    box-sizing:border-box;
+  }
+
+  /* pixel SVG scaled crisply */
+  svg.pixel { width:220px; height:150px; image-rendering:pixelated; shape-rendering:crispEdges; display:block; }
+
+  /* flap group - animate with steps for pixel feel */
+  .flap-g { transform-origin: 50% 0%; transform: rotateX(0deg); transition: transform 700ms var(--pixel-step); }
   .env.open .flap-g { transform: rotateX(180deg); }
 
-  /* small label below each */
-  .label { margin-top:8px; font-size:10px; color:#b35a7e; text-align:center; }
+  /* message panel inside envelope */
+  .message {
+    position:absolute; left:18px; top:34px; width:184px; height:104px;
+    background:var(--paper); border:4px solid #ffdfe9; border-radius:6px;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+    padding:8px; box-sizing:border-box; color:var(--text);
+    font-size:11px; line-height:1.25; opacity:0; transform:translateY(8px);
+    transition: opacity .25s linear, transform .25s linear;
+  }
+  .message.show { opacity:1; transform:translateY(0); }
 
-  /* pixel petals */
-  .petal{ position:fixed; width:10px; height:10px; border-radius:2px; z-index:40; image-rendering:pixelated; }
-  @keyframes fall {
-    0%{ transform: translateY(-10vh) rotate(0deg); opacity:1}
-    100%{ transform: translateY(100vh) rotate(360deg); opacity:0}
+  /* DAMN replacement style (uses pixel font) */
+  .damn {
+    font-family: 'Press Start 2P'; font-size:14px; color:#c33e6a; letter-spacing:10px;
+    transform-origin:center;
+  }
+  .shake { animation: shake 420ms ease-in-out 0s 2; }
+  @keyframes shake {
+    0%{ transform: translateX(0) } 25%{ transform: translateX(-6px) } 50%{ transform: translateX(6px) } 75%{ transform: translateX(-4px) } 100%{ transform: translateX(0) }
   }
 
-  /* cat (medium) - shows on top */
-  .cat-svg{ position:fixed; bottom:36px; left:50%; transform:translateX(-50%); width:120px; height:120px; z-index:45; image-rendering:pixelated; animation:catbob 900ms infinite; }
-  @keyframes catbob { 0%{ transform:translate(-50%,0)} 50%{transform:translate(-50%,-8px)} 100%{transform:translate(-50%,0)} }
+  /* medium pixel-cat (SVG container) */
+  .cat-svg { position:fixed; bottom:36px; left:50%; transform:translateX(-50%); width:120px; height:120px; z-index:50; image-rendering:pixelated; animation: catbob 900ms infinite; }
+  @keyframes catbob { 0%{ transform:translate(-50%,0)} 50%{ transform:translate(-50%,-8px) } 100%{ transform:translate(-50%,0)} }
 
-  /* DAMN text style (pixel font) */
-  .damn { font-family: 'Press Start 2P'; font-size:14px; color:#b43f6b; letter-spacing:8px; }
+  /* petals - small pixel blocks */
+  .petal { position:fixed; width:8px; height:8px; border-radius:1px; z-index:45; image-rendering:pixelated; }
 
-  /* subtle sparkle background pixels */
-  .sparkle{
-    position: absolute; width:6px; height:6px; background:#ffd6ea; border-radius:2px; opacity:.9; box-shadow:0 2px 0 rgba(0,0,0,0.05);
-    filter: blur(.2px);
-  }
+  /* small pixel sparkles */
+  .spark{ position:absolute; width:6px; height:6px; border-radius:1px; background:#ffd6ea; opacity:.9; filter: blur(.3px); }
+
+  /* label under each envelope */
+  .label { font-size:10px; color:#b75a85; margin-top:8px; text-align:center; }
+
+  /* accessibility focus */
+  .env:focus { outline: 3px dashed rgba(200,100,150,0.2); outline-offset:6px; }
+
 </style>
 </head>
 <body>
+  <header>
+    <h1>💌 Pixel Coquette Letters</h1>
+    <p>Click a pixel envelope — it opens in blocky pixel style</p>
+  </header>
 
-<header>
-  <h1>💌 Pixel Coquette Letters</h1>
-  <p>click a pixel envelope — flap opens in pixel style</p>
-</header>
-
-<main class="letters" aria-label="choose letter">
-  <!-- SINGLE envelope -->
-  <div class="env" id="env-single" role="button" tabindex="0" aria-label="Open single letter">
-    <div class="card">
-      <!-- inline SVG pixel-envelope (flap is a group .flap-g so we can rotate it) -->
-      <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <!-- envelope body (pixel-style) -->
-        <rect x="0" y="6" width="48" height="26" fill="#fff7fb" stroke="#ffdfe9" stroke-width="1"/>
-        <!-- flap group -->
-        <g class="flap-g">
-          <rect x="0" y="0" width="48" height="16" fill="#ffd7e8" stroke="#f7b6cf" stroke-width="1"/>
-          <!-- heart seal block (drawn as pixels) -->
-          <g transform="translate(20,6)">
-            <rect x="0" y="0" width="2" height="2" fill="#b93f73"/>
-            <rect x="2" y="0" width="2" height="2" fill="#b93f73"/>
-            <rect x="1" y="2" width="2" height="2" fill="#b93f73"/>
+  <main class="letters" aria-label="choose letter">
+    <!-- SINGLE envelope -->
+    <div class="env" id="env-single" role="button" tabindex="0" aria-pressed="false" aria-label="Open single letter">
+      <div class="card">
+        <!-- pixel-envelope SVG (flap group is .flap-g) -->
+        <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- body -->
+          <rect x="0" y="6" width="48" height="26" fill="#fff7fb" stroke="#ffdfe9" stroke-width="0.8"/>
+          <!-- flap -->
+          <g class="flap-g">
+            <rect x="0" y="0" width="48" height="16" fill="#ffd7e8" stroke="#f7b6cf" stroke-width="0.8"/>
+            <!-- heart seal pixels (3x3 pixel heart block) -->
+            <g transform="translate(20,6)">
+              <rect x="0" y="0" width="2" height="2" fill="#b93f73"/>
+              <rect x="2" y="0" width="2" height="2" fill="#b93f73"/>
+              <rect x="1" y="2" width="2" height="2" fill="#b93f73"/>
+            </g>
           </g>
-        </g>
 
-        <!-- pixel shadow under flap (to emphasize) -->
-        <rect x="0" y="15.5" width="48" height="1" fill="#f0b6c9" opacity="0.6"/>
+          <!-- small stripe / postage -->
+          <rect x="4" y="22" width="6" height="4" fill="#ffd1e6" stroke="#ffb6d2" stroke-width="0.3"/>
+          <!-- small decorative pixels -->
+          <rect x="12" y="22" width="2" height="1" fill="#e889b0"/>
+          <rect x="15" y="22" width="2" height="1" fill="#e889b0"/>
+        </svg>
 
-        <!-- decorative postage pixel -->
-        <rect x="4" y="22" width="6" height="4" fill="#ffd1e6" stroke="#ffb6d2" stroke-width="0.3"/>
-
-        <!-- small title text simulated with rectangles (pixel title) -->
-        <g transform="translate(12,22)">
-          <rect x="0" y="0" width="2" height="1" fill="#e889b0"/>
-          <rect x="3" y="0" width="2" height="1" fill="#e889b0"/>
-        </g>
-      </svg>
-
-      <!-- message card (hidden until open) -->
-      <div class="message" id="msg-single" aria-hidden="true">
-        <div>
-          <strong>To my lovely you ♥</strong><br>
-          <div style="margin-top:8px;">
-            Roses are red while some are white,<br>
-            Violet is a mix of both red and blue,<br>
-            But most importantly,<br>
-            Can I ask a date with you? 💐
+        <!-- message inside (hidden until open) -->
+        <div class="message" id="msg-single" aria-hidden="true">
+          <div style="font-size:10px; line-height:1.25;">
+            <strong>To my lovely you ♥</strong>
+            <div style="margin-top:8px;">
+              Roses are red while some are white,<br>
+              Violet is a mix of both red and blue,<br>
+              But most importantly,<br>
+              Can I ask a date with you? 💐
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="label">Single 💖</div>
     </div>
 
-    <div class="label">Single 💖</div>
-  </div>
-
-  <!-- TAKEN envelope -->
-  <div class="env" id="env-taken" role="button" tabindex="0" aria-label="Open taken letter">
-    <div class="card">
-      <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="0" y="6" width="48" height="26" fill="#fffaf8" stroke="#ffe6ee" stroke-width="1"/>
-        <g class="flap-g">
-          <rect x="0" y="0" width="48" height="16" fill="#ffe8ee" stroke="#f6cbd9" stroke-width="1"/>
-          <g transform="translate(20,6)">
-            <rect x="0" y="0" width="2" height="2" fill="#bd5b6f"/>
-            <rect x="2" y="0" width="2" height="2" fill="#bd5b6f"/>
-            <rect x="1" y="2" width="2" height="2" fill="#bd5b6f"/>
+    <!-- TAKEN envelope -->
+    <div class="env" id="env-taken" role="button" tabindex="0" aria-pressed="false" aria-label="Open taken letter">
+      <div class="card">
+        <svg class="pixel" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="0" y="6" width="48" height="26" fill="#fffaf8" stroke="#ffe6ee" stroke-width="0.8"/>
+          <g class="flap-g">
+            <rect x="0" y="0" width="48" height="16" fill="#ffe8ee" stroke="#f6cbd9" stroke-width="0.8"/>
+            <g transform="translate(20,6)">
+              <rect x="0" y="0" width="2" height="2" fill="#bd5b6f"/>
+              <rect x="2" y="0" width="2" height="2" fill="#bd5b6f"/>
+              <rect x="1" y="2" width="2" height="2" fill="#bd5b6f"/>
+            </g>
           </g>
-        </g>
-        <rect x="0" y="15.5" width="48" height="1" fill="#f1b6c9" opacity="0.5"/>
-        <rect x="4" y="22" width="6" height="4" fill="#ffe5ef" stroke="#ffd8ea" stroke-width="0.3"/>
-      </svg>
 
-      <div class="message" id="msg-taken" aria-hidden="true">
-        <div>
-          <strong class="damn">D a m n</strong>
+          <rect x="4" y="22" width="6" height="4" fill="#ffe5ef" stroke="#ffd8ea" stroke-width="0.3"/>
+        </svg>
+
+        <!-- message for taken will be replaced by DAMN display (we keep element to swap) -->
+        <div class="message" id="msg-taken" aria-hidden="true" style="justify-content:center;">
+          <!-- will be replaced with pixel DAMN -->
+          <div id="replace-taken"></div>
         </div>
       </div>
+
+      <div class="label">Taken 💔</div>
     </div>
+  </main>
 
-    <div class="label">Taken 💔</div>
-  </div>
-</main>
-
-<!-- optional pixel sparkles placed around -->
-<div class="sparkle" style="left:12%;top:18%;"></div>
-<div class="sparkle" style="left:82%;top:24%;"></div>
-<div class="sparkle" style="left:40%;top:6%;"></div>
+  <!-- decorative sparkles -->
+  <div class="spark" style="left:10%; top:20%;"></div>
+  <div class="spark" style="left:82%; top:24%;"></div>
+  <div class="spark" style="left:44%; top:6%;"></div>
 
 <script>
-  // DOM refs
+  // DOM nodes
   const envSingle = document.getElementById('env-single');
-  const envTaken  = document.getElementById('env-taken');
+  const envTaken = document.getElementById('env-taken');
   const msgSingle = document.getElementById('msg-single');
-  const msgTaken  = document.getElementById('msg-taken');
+  const msgTaken = document.getElementById('msg-taken');
+  const replaceTaken = document.getElementById('replace-taken');
 
-  // Pixel cat built in SVG (drawn below when needed)
+  // open envelope with pixel-step flap
+  function openEnv(envEl, msgEl, withEffects=false, replaceWithDamn=false) {
+    if(envEl.classList.contains('open')) return;
+    envEl.classList.add('open');
+    setTimeout(()=> {
+      msgEl.classList.add('show');
+      msgEl.setAttribute('aria-hidden','false');
+      if(withEffects) { spawnPetals(); insertCat(); }
+      if(replaceWithDamn) { showDamnIn(msgEl); }
+    }, 700);
+  }
+
+  // spawn small pixel petals falling
+  function spawnPetals(){
+    const colors = ['#f9bfd1','#ffd1e6','#ffc4d9'];
+    for(let i=0;i<18;i++){
+      const pet = document.createElement('div');
+      pet.className = 'petal';
+      pet.style.left = (Math.random()*86 + 6) + 'vw';
+      pet.style.top = (-8 - Math.random()*25) + 'vh';
+      pet.style.background = colors[Math.floor(Math.random()*colors.length)];
+      pet.style.width = (6 + Math.random()*6) + 'px';
+      pet.style.height = pet.style.width;
+      document.body.appendChild(pet);
+      pet.animate([
+        { transform: 'translateY(0) rotate(0deg)', opacity:1 },
+        { transform: `translateY(${80 + Math.random()*50}vh) rotate(${360 + Math.random()*360}deg)`, opacity:0 }
+      ], { duration: 3000 + Math.random()*1800, easing: 'cubic-bezier(.2,.9,.3,1)'});
+      setTimeout(()=> pet.remove(), 5200);
+    }
+  }
+
+  // build medium pixel cat using SVG rectangles (no external assets)
   function insertCat(){
-    if(document.querySelector('.cat-svg')) return; // prevent duplicates
+    if(document.querySelector('.cat-svg')) return;
     const ns = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(ns, 'svg');
+    const svg = document.createElementNS(ns,'svg');
     svg.setAttribute('class','cat-svg');
-    svg.setAttribute('viewBox','0 0 24 24');
+    svg.setAttribute('viewBox','0 0 12 12');
     svg.setAttribute('aria-hidden','true');
-    // Build cat via many small rects (pixel blocks) to match your provided cat look (pink tones)
-    // We'll construct a compact 12x12 pixel cat scaled by viewBox
+
+    // pixel array: [x,y,color] approximate to your cat palette
     const pixels = [
-      /* each item: [x,y,color]  (design simplified copy of your provided cat) */
-      // row 0
       [4,0,'#f7c7d7'],[5,0,'#f7c7d7'],[6,0,'#f7c7d7'],
-      // row1
       [3,1,'#f7c7d7'],[4,1,'#f7c7d7'],[5,1,'#f39fbf'],[6,1,'#f39fbf'],[7,1,'#f7c7d7'],
-      // row2
       [2,2,'#f7c7d7'],[3,2,'#f39fbf'],[4,2,'#e6769e'],[5,2,'#c94a70'],[6,2,'#e6769e'],[7,2,'#f39fbf'],[8,2,'#f7c7d7'],
-      // row3 (eyes)
       [2,3,'#f7c7d7'],[3,3,'#e6769e'],[4,3,'#2b1b2b'],[5,3,'#fff6fb'],[6,3,'#fff6fb'],[7,3,'#2b1b2b'],[8,3,'#e6769e'],
-      // row4
       [2,4,'#f7c7d7'],[3,4,'#e6769e'],[4,4,'#c94a70'],[5,4,'#e89dbb'],[6,4,'#c94a70'],[7,4,'#e6769e'],[8,4,'#f7c7d7'],
-      // row5
       [3,5,'#f39fbf'],[4,5,'#f39fbf'],[5,5,'#e6769e'],[6,5,'#f39fbf'],[7,5,'#f39fbf'],
-      // row6 body
       [4,6,'#ffd1e6'],[5,6,'#ffd1e6'],[6,6,'#ffd1e6'],
       [3,7,'#ffd1e6'],[4,7,'#ffb6d2'],[5,7,'#ffb6d2'],[6,7,'#ffb6d2'],[7,7,'#ffd1e6'],
       [2,8,'#ffd1e6'],[3,8,'#ffd1e6'],[4,8,'#ffb6d2'],[5,8,'#ffb6d2'],[6,8,'#ffb6d2'],[7,8,'#ffd1e6'],[8,8,'#ffd1e6'],
       [4,9,'#ffd1e6'],[5,9,'#ffd1e6'],[6,9,'#ffd1e6']
     ];
 
-    // draw rects sized to viewbox scale (we'll choose pixel size = 1 for small sprite)
-    pixels.forEach(([x,y,color])=>{
+    pixels.forEach(([x,y,color]) => {
       const r = document.createElementNS(ns,'rect');
       r.setAttribute('x', x);
       r.setAttribute('y', y);
@@ -212,46 +242,23 @@
       svg.appendChild(r);
     });
 
-    // add a tiny face highlight or paw - optional (kept simple)
     document.body.appendChild(svg);
-    // remove after 7s
-    setTimeout(()=> svg.remove(), 7000);
+    setTimeout(()=> svg.remove(), 7200);
   }
 
-  // spawn pixel petals
-  function spawnPetals(){
-    const colors = ['#f9bfd1','#ffd1e6','#ffc4d9'];
-    for(let i=0;i<18;i++){
-      const el = document.createElement('div');
-      el.className = 'petal';
-      el.style.left = (Math.random()*90 + 5) + 'vw';
-      el.style.background = colors[Math.floor(Math.random()*colors.length)];
-      el.style.top = (-5 - Math.random()*20) + 'vh';
-      el.style.width = (6 + Math.random()*8) + 'px';
-      el.style.height = el.style.width;
-      document.body.appendChild(el);
-      el.animate([
-        { transform: 'translateY(0) rotate(0deg)', opacity:1 },
-        { transform: `translateY(${90 + Math.random()*60}vh) rotate(${360 + Math.random()*360}deg)`, opacity:0 }
-      ], { duration: 3200 + Math.random()*1800, easing: 'cubic-bezier(.2,.9,.3,1)'});
-      setTimeout(()=> el.remove(), 5500);
-    }
+  // Show DAMN in place of the envelope's message area
+  function showDamnIn(msgEl){
+    replaceTaken.innerHTML = ''; // clear
+    // create DAMN element
+    const d = document.createElement('div');
+    d.className = 'damn shake';
+    d.textContent = 'D a m n';
+    replaceTaken.appendChild(d);
   }
 
-  // open function (pixel-stepped via CSS transition steps)
-  function openEnv(envEl, msgEl, withEffects){
-    if(envEl.classList.contains('open')) return;
-    envEl.classList.add('open');
-    // show message slightly after flap opens
-    setTimeout(()=> {
-      msgEl.classList.add('show');
-      msgEl.setAttribute('aria-hidden','false');
-      if(withEffects){ spawnPetals(); insertCat(); }
-    }, 700);
-  }
-
-  envSingle.addEventListener('click', ()=> openEnv(envSingle, msgSingle, true));
-  envTaken.addEventListener('click', ()=> openEnv(envTaken, msgTaken, false));
+  // open behaviors
+  envSingle.addEventListener('click', ()=> openEnv(envSingle, msgSingle, true, false));
+  envTaken.addEventListener('click', ()=> openEnv(envTaken, msgTaken, false, true));
 
   // keyboard accessibility
   [envSingle, envTaken].forEach(el=>{
@@ -259,7 +266,6 @@
       if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
     });
   });
-
 </script>
 </body>
 </html>
